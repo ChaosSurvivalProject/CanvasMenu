@@ -28,6 +28,35 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), version
 - Update chain consolidated into `com.canvasmenu.update.AutoUpdater`; the inventory entrypoint no longer performs its own startup check.
 - `fabric.mod.json`: two client entrypoints, version 0.2.0, extended `custom.canvasmenu` metadata.
 
+### Fixed — 1.21.11 真实 API 适配（经 GitHub Actions 实际编译验证）
+
+The first CI builds failed with 15 `compileJava` errors because the canvas layer
+was written against the pre-1.21.9 GUI API. All were fixed against Mojang's
+official 1.21.11 client mappings:
+
+- `Screen.resize(int, int)` no longer takes a `Minecraft` argument.
+- Mouse / keyboard callbacks now use immutable records from
+  `net.minecraft.client.input`: `mouseClicked(MouseButtonEvent, boolean)`,
+  `mouseReleased(MouseButtonEvent)`, `mouseDragged(MouseButtonEvent, double, double)`,
+  `keyPressed(KeyEvent)`, `charTyped(CharacterEvent)`.
+  `CanvasScreen` unpacks them into the version-independent
+  `(double, double, int)` widget API — no widget code had to change.
+  A new `onMouseReleased` hook keeps the inventory drag-swap working.
+- `KeyMapping`'s 4th constructor argument is now a `KeyMapping.Category`
+  (`MISC`), not a translation key.
+- `Window.getWindow()` was replaced by `Window.handle()`.
+- `ChatScreen` is constructed as `(String initial, boolean isDraft)` since
+  1.21.9. `ChatBridge` probes that signature first, so clicking a command card
+  really fills the chat bar instead of silently degrading to the clipboard.
+- Runtime reflection targets re-verified against the mappings:
+  `Minecraft.getResourceManager()`, `ResourceProvider.getResource(Identifier)`
+  returning `Optional`, `EditBox.setValue(String)`,
+  `MultiPlayerGameMode.handleInventoryMouseClick(int,int,int,ClickType,Player)`.
+
+Verified by a clean GitHub Actions `./gradlew build` on JDK 21:
+**BUILD SUCCESSFUL**, producing `canvas-menu-0.2.0.jar` (257 KB) and
+`canvas-menu-0.2.0-sources.jar` (188 KB).
+
 ## [0.1.0] - 2026-11-07
 
 ### Added
