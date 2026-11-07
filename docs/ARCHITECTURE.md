@@ -128,6 +128,50 @@ CanvasMenu#onInitializeClient
 | 动效统一由 `Animator` 虚拟时钟推进 | 可在 reduce-motion 下整体降为 0ms，也便于暂停时冻结 |
 | Token 只在构建期注入 | 满足「不进仓库、不进日志、不硬编码」 |
 
+## 3.5 指令中心（0.2.0）架构
+
+```
+F7 / 背包「指令中心」按钮
+        │
+        ▼
+CommandPanelScreen (extends CanvasScreen, 自绘四层)
+   ├── CommandRail        左：9 分类 + 全部 / 收藏（虚拟）
+   ├── SearchBox          120ms 防抖 → 只置 filterDirty
+   ├── CommandGridLayout  纯计算：列数 / 行数 / maxScroll / 可见 placement
+   ├── CommandCardWidget × N
+   │     ├── CardPaint    九宫格 + 四角渐变 + 抬升 + 发光描边 + 收藏角标
+   │     ├── IconBlitter  真实 PNG（行段 fill） / 占位符（glyph）
+   │     ├── ChatBridge   左键 → ChatScreen(command)，不自动发送
+   │     └── Favorites    右键 → config/canvasmenu-favorites.json
+   └── CommandTooltip     特效层浮层：指令 + 说明 + 操作提示
+
+CommandRegistry (JSON 驱动)
+   ├── assets/canvasmenu/commands.json       出厂 31 条
+   └── config/canvasmenu-commands.json      玩家覆盖（优先）
+
+IconTextures —— 虚拟线程 + ResourceManager 异步加载 41 张 64×64 PNG
+   → ARGB → 按显示尺寸惰性生成行段（run-length）→ 渲染只调 fill
+
+AutoUpdater（com.canvasmenu.update）—— 单一更新链路
+   启动检查 → SemVer → 设置页一键下载 → .canvasmenu-update/ → update.lock
+   → 退出阶段文件层替换 → 下次启动生效（绝不热替换运行中 jar）
+```
+
+### 关键设计决策（0.2.0）
+
+| 决策 | 理由 |
+|---|---|
+| 新模块用 `com.canvasmenu.*`，复用旧包 `CanvasScreen` / `Render2D` / `Theme` / `Async` | 增量开发，不重复造 UI 框架；整个仓库导入 IDE 即可编译 |
+| 贴图渲染用「解码 PNG → 行段 fill」而非 `blit` | 1.21.11 的 `blit` 需要 `RenderPipelines.GUI_TEXTURED` + `Identifier`，签名跨版本频繁变动；行段法只依赖稳定的 `fill`，且真实呈现 PNG 内容 |
+| 颜色按每通道高 4 位量化后合并行段 | 微渐变被压成 8~20 段/行，fill 调用从 4096 降到几百，滚动 30+ 卡片仍流畅 |
+| 占位符与真实贴图共用同一徽章视觉 | 贴图缺失 / 资源包覆盖 / 尚未加载完时混排不突兀，替换 PNG 零改代码 |
+| `GuiCompat` 反射适配 `Matrix3x2fStack` / 6 参 `drawString` / `ResourceManager` | 1.21.8+ GUI 变换栈与 1.21.9+ `Identifier` 改名会让旧代码编译失败；集中探测 + 安全降级 |
+| 过滤重排放在 `tick()` 中 `super.tick()` 之后 | 避免在 `CanvasScreen.tick()` 遍历 widgets 时修改列表导致并发修改异常 |
+| 点击只「填入聊天栏」不自动发送 | 让玩家看清 / 修改 / 取消 `gamerule` / `summon` 等影响世界的指令，更安全 |
+| 更新链路收敛到 `AutoUpdater` 单一实现 | 避免两个入口各发一次网络请求、两套下载状态机 |
+| `update.lock` 用 `CREATE_NEW` 原子创建 | 并发 / 重复点击「下载并重启」时只有一个能成功 |
+| CI 用 GitHub Actions 真实 `./gradlew build` | 本地沙箱无法下载数百 MB 的 Gradle/MC 工具链；托管环境有 JDK 21 与完整网络，产出真实可安装 jar |
+
 ## 4. 迭代路线图
 
 | 阶段 | 范围 | 交付 |

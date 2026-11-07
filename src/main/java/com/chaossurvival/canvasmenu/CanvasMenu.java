@@ -2,16 +2,12 @@ package com.chaossurvival.canvasmenu;
 
 import com.chaossurvival.canvasmenu.anim.Animator;
 import com.chaossurvival.canvasmenu.config.ConfigManager;
-import com.chaossurvival.canvasmenu.config.ModConfig;
 import com.chaossurvival.canvasmenu.gui.screen.CanvasInventoryScreen;
 import com.chaossurvival.canvasmenu.gui.screen.SettingsScreen;
-import com.chaossurvival.canvasmenu.update.UpdateChecker;
-import com.chaossurvival.canvasmenu.update.Updater;
 import com.chaossurvival.canvasmenu.util.Async;
 import com.chaossurvival.canvasmenu.util.Log;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,13 +15,13 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 
-import java.nio.file.Path;
-
 /**
- * 客户端入口 {@link ClientModInitializer}。
+ * 画布背包的客户端入口 {@link ClientModInitializer}。
  *
- * <p>负责：配置 / 主题 / 动效初始化、按键注册、{@code E} 背包接管、
- * 启动时异步更新检查、退出时完成挂起的更新替换。</p>
+ * <p>职责：配置 / 主题 / 动效初始化、{@code F6} 设置键、{@code E} 背包接管。
+ * 「指令中心」模块由并列的第二个入口
+ * {@code com.canvasmenu.CommandCenter} 负责；GitHub 自动更新链路也统一由
+ * {@code com.canvasmenu.update.AutoUpdater} 驱动（单一链路，避免重复网络请求）。</p>
  *
  * <p>接管完全在客户端表现层：底层仍是原版 {@code Menu/Slot} 与原版网络包，
  * 不修改服务端协议，多人 / 生存行为不变。</p>
@@ -36,9 +32,6 @@ public final class CanvasMenu implements ClientModInitializer {
     public static final String MOD_ID = "canvasmenu";
 
     private static KeyMapping settingsKey;
-    private static volatile UpdateChecker.ReleaseInfo latestRelease;
-    private static volatile boolean updateCheckRunning;
-    private static volatile long lastCheckId;
 
     @Override
     public void onInitializeClient() {
@@ -52,14 +45,6 @@ public final class CanvasMenu implements ClientModInitializer {
                 "canvasmenu.key.category"));
 
         ClientTickEvents.END_CLIENT_TICK.register(CanvasMenu::onClientTick);
-        ClientLifecycleEvents.CLIENT_STOPPING.register(client -> Updater.onClientStopping());
-
-        Updater.pendingMessage(Path.of("mods"))
-                .ifPresent(message -> Log.info("{}", message));
-
-        if (ConfigManager.get().checkUpdatesOnStartup()) {
-            checkUpdatesAsync();
-        }
         Runtime.getRuntime().addShutdownHook(new Thread(Async::shutdown, "canvasmenu-async-shutdown"));
         Log.info("Canvas Menu {} initialized", localVersionString());
     }
@@ -82,47 +67,6 @@ public final class CanvasMenu implements ClientModInitializer {
             client.setScreen(new CanvasInventoryScreen(client.screen, ConfigManager.theme(),
                     client.player.inventoryMenu));
         }
-    }
-
-    /**
-     * 触发一次异步更新检查（幂等，重复调用被忽略直到本次结束）。
-     */
-    public static void checkUpdatesAsync() {
-        if (updateCheckRunning) {
-            return;
-        }
-        updateCheckRunning = true;
-        ModConfig config = ConfigManager.get();
-        String local = localVersionString();
-        UpdateChecker.check(config, local).whenComplete((result, error) -> {
-            latestRelease = result == null ? null : result.orElse(null);
-            lastCheckId++;
-            updateCheckRunning = false;
-            if (error != null) {
-                Log.debug("Update check task failed: {}", error.toString());
-            }
-        });
-    }
-
-    /**
-     * @return 最近一次检查到的可用更新，无则 {@code null}
-     */
-    public static UpdateChecker.ReleaseInfo latestRelease() {
-        return latestRelease;
-    }
-
-    /**
-     * @return 是否有检查正在进行
-     */
-    public static boolean isUpdateCheckRunning() {
-        return updateCheckRunning;
-    }
-
-    /**
-     * @return 已完成检查的次数（供 UI 判断结果是否刷新）
-     */
-    public static long lastCheckId() {
-        return lastCheckId;
     }
 
     /**

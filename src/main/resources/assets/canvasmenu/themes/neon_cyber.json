@@ -1,8 +1,23 @@
 {
-  "name": "Neon Cyber",
-  "radius": [6, 10, 16, 24],
-  "gap": [8, 12, 16, 24],
-  "elevation": ["#00000000", "#22FFFFFF", "#33FFFFFF", "#44FFFFFF"],
+  "name": "霓虹赛博",
+  "radius": [
+    6,
+    10,
+    16,
+    24
+  ],
+  "gap": [
+    8,
+    12,
+    16,
+    24
+  ],
+  "elevation": [
+    "#00000000",
+    "#224FD1C5",
+    "#334FD1C5",
+    "#444FD1C5"
+  ],
   "bg": {
     "base": "#0E1116",
     "panel": "#161B22",
@@ -14,11 +29,11 @@
   },
   "accent": {
     "main": "#4FD1C5",
-    "glow": "#4FD1C5AA"
+    "glow": "#AA4FD1C5"
   },
   "font": {
-    "display": "serif-ish",
-    "body": "mono-ish"
+    "display": "mono",
+    "body": "mono"
   },
   "motion": {
     "fast": 150,

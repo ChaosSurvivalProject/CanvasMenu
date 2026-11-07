@@ -1,6 +1,5 @@
 package com.chaossurvival.canvasmenu.gui.screen;
 
-import com.chaossurvival.canvasmenu.CanvasMenu;
 import com.chaossurvival.canvasmenu.config.ConfigManager;
 import com.chaossurvival.canvasmenu.config.ModConfig;
 import com.chaossurvival.canvasmenu.gui.layout.Flex;
@@ -10,31 +9,27 @@ import com.chaossurvival.canvasmenu.gui.widget.Button;
 import com.chaossurvival.canvasmenu.gui.widget.Slider;
 import com.chaossurvival.canvasmenu.gui.widget.Toggle;
 import com.chaossurvival.canvasmenu.gui.widget.Widget;
-import com.chaossurvival.canvasmenu.theme.Palette;
 import com.chaossurvival.canvasmenu.theme.Theme;
-import com.chaossurvival.canvasmenu.update.Downloader;
-import com.chaossurvival.canvasmenu.update.UpdateChecker;
-import com.chaossurvival.canvasmenu.update.Updater;
-import com.chaossurvival.canvasmenu.util.Async;
+import com.canvasmenu.theme.ThemePreset;
+import com.canvasmenu.update.AutoUpdater;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletionException;
 
 /**
- * 模组设置页：主题切换、接管开关、无障碍选项、检查更新 UI。
+ * 模组设置页：主题切换、接管开关、无障碍选项、<strong>GitHub 自动更新</strong> UI。
  *
- * <p>更新区包含状态提示、changelog 折叠与「下载并重启」；
- * 下载在虚拟线程执行，进度通过 volatile 字段回传，主线程只在 {@code tick()} 里改 UI。</p>
+ * <p>更新区完全由 {@link AutoUpdater} 驱动（单一链路）：状态提示、changelog 折叠、
+ * 「下载并重启」。检查与下载都在虚拟线程执行，主线程只在 {@code tick()} 里读
+ * {@code volatile} 状态字段改 UI；失败时 {@code AutoUpdater} 会清空文案并静默降级，
+ * 本页始终保留「检查更新」重试入口，不弹错误打断游戏。</p>
  */
 public final class SettingsScreen extends CanvasScreen {
 
@@ -70,18 +65,16 @@ public final class SettingsScreen extends CanvasScreen {
     private final List<Widget> leftColumn = new ArrayList<>();
     private final List<Widget> rightColumn = new ArrayList<>();
 
-    private UpdateChecker.ReleaseInfo available;
+    private AutoUpdater.ReleaseInfo available;
     private String statusText = "";
     private boolean checking;
     private boolean downloading;
     private boolean changelogOpen;
-    private volatile int progressPercent;
-    private volatile String pendingStatus;
     private long observedCheckId;
 
     /**
      * @param parent 返回目标
-     * @param theme  主题
+     * @param theme  当前主题
      */
     public SettingsScreen(Screen parent, Theme theme) {
         super(Component.translatable("canvasmenu.screen.settings"), parent, theme);
@@ -91,13 +84,13 @@ public final class SettingsScreen extends CanvasScreen {
     protected void layout() {
         widgets.clear();
         draft = ConfigManager.get();
-        available = CanvasMenu.latestRelease();
+        available = AutoUpdater.available();
         leftColumn.clear();
         rightColumn.clear();
         toggles.clear();
 
         themeButton = new Button(theme, themeLabel(), () -> {
-            draft = draft.withTheme(Palette.next(draft.theme()));
+            draft = draft.withTheme(ThemePreset.next(draft.theme()));
             themeButton.setLabel(themeLabel());
         });
         leftColumn.add(themeButton);
@@ -120,7 +113,7 @@ public final class SettingsScreen extends CanvasScreen {
         checkButton = new Button(theme, label("canvasmenu.update.check"), () -> {
             checking = true;
             statusText = label("canvasmenu.update.checking");
-            CanvasMenu.checkUpdatesAsync();
+            AutoUpdater.checkAgain();
         });
         changelogButton = new Button(theme, label("canvasmenu.update.changelog"),
                 () -> changelogOpen = !changelogOpen);
@@ -181,84 +174,64 @@ public final class SettingsScreen extends CanvasScreen {
     @Override
     public void tick() {
         super.tick();
-        if (pendingStatus != null) {
-            statusText = pendingStatus;
-            pendingStatus = null;
-        }
-        if (checking && !CanvasMenu.isUpdateCheckRunning()
-                && CanvasMenu.lastCheckId() != observedCheckId) {
-            observedCheckId = CanvasMenu.lastCheckId();
+        // 检查完成：读取 AutoUpdater 的最新结果
+        if (checking && !AutoUpdater.isChecking()
+                && AutoUpdater.checkId() != observedCheckId) {
+            observedCheckId = AutoUpdater.checkId();
             checking = false;
-            available = CanvasMenu.latestRelease();
+            available = AutoUpdater.available();
             refreshUpdateUi();
         }
+        // 下载中：主线程只读进度百分比；完成后读取（可能为空的）状态文案
         if (downloading) {
             statusText = label("canvasmenu.update.downloading")
-                    .replace("%d", String.valueOf(progressPercent));
+                    .replace("%d", String.valueOf(AutoUpdater.progressPercent()));
+            if (!AutoUpdater.isDownloading()) {
+                downloading = false;
+                String result = AutoUpdater.message();
+                // 失败时 AutoUpdater 返回空文案 → 静默降级，不弹错误
+                statusText = result.isEmpty()
+                        ? label("canvasmenu.update.up_to_date").replace("%s", AutoUpdater.localVersion())
+                        : result;
+                refreshUpdateUi();
+            }
         }
     }
 
     private void refreshUpdateUi() {
+        if (AutoUpdater.hasPendingSwap()) {
+            statusText = "更新已下载，重启游戏后生效";
+            downloadButton.setEnabled(false);
+            return;
+        }
         if (available != null) {
             statusText = label("canvasmenu.update.available").replace("%s", available.tag());
-            downloadButton.setEnabled(true);
+            downloadButton.setEnabled(!downloading);
             changelogButton.setEnabled(!available.body().isBlank());
         } else {
             statusText = label("canvasmenu.update.up_to_date")
-                    .replace("%s", CanvasMenu.localVersionString());
+                    .replace("%s", AutoUpdater.localVersion());
             downloadButton.setEnabled(false);
         }
     }
 
     /**
-     * 下载新版本并调度重启替换。全程虚拟线程，主线程只读进度字段。
+     * 触发一键下载。实际网络 / 磁盘工作全部由 {@link AutoUpdater} 在虚拟线程完成；
+     * 本方法只改按钮状态，不做任何阻塞操作。
      */
     private void startDownload() {
-        if (available == null || downloading) {
-            return;
-        }
-        var jarAsset = available.jarAsset();
-        if (jarAsset.isEmpty()) {
+        if (available == null || downloading || AutoUpdater.isDownloading()
+                || AutoUpdater.hasPendingSwap()) {
             return;
         }
         downloading = true;
-        progressPercent = 0;
         downloadButton.setEnabled(false);
-        UpdateChecker.Asset asset = jarAsset.get();
-        String shaUrl = available.sha256Asset().map(UpdateChecker.Asset::url).orElse(null);
-        boolean verify = ConfigManager.get().verifySha256();
-
-        Async.supply(() -> {
-            try {
-                String expected = null;
-                if (verify && shaUrl != null) {
-                    expected = Downloader.fetchSha256(shaUrl);
-                }
-                Path destination = Path.of("mods", Updater.STAGING_DIR, asset.name());
-                return Downloader.download(asset.url(), destination,
-                        ratio -> progressPercent = (int) (ratio * 100.0d), expected);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new CompletionException(e);
-            } catch (IOException e) {
-                throw new CompletionException(e);
-            }
-        }).whenComplete((path, error) -> {
-            if (error != null || path == null) {
-                pendingStatus = label("canvasmenu.update.failed");
-                downloading = false;
-                return;
-            }
-            boolean scheduled = Updater.scheduleSwap(path, Path.of("mods"), null);
-            pendingStatus = scheduled
-                    ? label("canvasmenu.update.scheduled")
-                    : label("canvasmenu.update.failed");
-            downloading = false;
-        });
+        statusText = label("canvasmenu.update.downloading").replace("%d", "0");
+        AutoUpdater.downloadAndSchedule();
     }
 
     private String themeLabel() {
-        return label("canvasmenu.settings.theme") + ": " + Palette.displayName(draft.theme());
+        return label("canvasmenu.settings.theme") + ": " + ThemePreset.displayName(draft.theme());
     }
 
     private static boolean booleanField(ModConfig config, String field) {

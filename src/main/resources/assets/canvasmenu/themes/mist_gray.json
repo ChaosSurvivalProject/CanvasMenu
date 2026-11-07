@@ -1,0 +1,44 @@
+{
+  "name": "雾灰极简",
+  "radius": [
+    4,
+    8,
+    12,
+    18
+  ],
+  "gap": [
+    10,
+    16,
+    24,
+    32
+  ],
+  "elevation": [
+    "#00000000",
+    "#14202830",
+    "#1E283238",
+    "#28323A40"
+  ],
+  "bg": {
+    "base": "#101316",
+    "panel": "#191D21",
+    "float": "#22272C"
+  },
+  "text": {
+    "primary": "#F2F3F4",
+    "secondary": "#9BA1A8"
+  },
+  "accent": {
+    "main": "#D6DCE2",
+    "glow": "#66D6DCE2"
+  },
+  "font": {
+    "display": "sans",
+    "body": "sans"
+  },
+  "motion": {
+    "fast": 120,
+    "normal": 200,
+    "slow": 280,
+    "curve": "cubic-bezier(0.22,1,0.36,1)"
+  }
+}

@@ -9,6 +9,7 @@ import com.chaossurvival.canvasmenu.gui.widget.ItemCard;
 import com.chaossurvival.canvasmenu.gui.widget.Rail;
 import com.chaossurvival.canvasmenu.gui.widget.SearchBox;
 import com.chaossurvival.canvasmenu.theme.Theme;
+import com.canvasmenu.CommandCenter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -38,6 +39,7 @@ public final class CanvasInventoryScreen extends CanvasScreen {
     private SearchBox search;
     private Rail rail;
     private Button closeButton;
+    private Button commandButton;
     private ContextLayer context;
     private String query = "";
 
@@ -78,6 +80,14 @@ public final class CanvasInventoryScreen extends CanvasScreen {
         search.setBounds(dock.x(), dock.y(),
                 Math.min(200, Math.max(80, dock.width() / 3)), dock.height());
         addWidget(search);
+
+        // 「指令中心」入口按钮：点击后打开全屏画布面板
+        commandButton = new Button(theme, label("canvasmenu.card.command_center"), CommandCenter::open);
+        int commandWidth = commandButton.preferredWidth();
+        int searchWidth = Math.min(200, Math.max(80, dock.width() / 3));
+        commandButton.setBounds(dock.x() + searchWidth + theme.gap(1), dock.y(),
+                commandWidth, dock.height());
+        addWidget(commandButton);
 
         closeButton = new Button(theme, label("canvasmenu.settings.cancel"), this::closeWithAnimation);
         int closeWidth = closeButton.preferredWidth();

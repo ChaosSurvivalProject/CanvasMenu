@@ -3,7 +3,7 @@
   "id": "canvasmenu",
   "version": "${version}",
   "name": "Canvas Menu",
-  "description": "A canvas-style, card-based client UI for Minecraft. Curated items, breathing layouts, restrained motion.",
+  "description": "Canvas-style client UI for Minecraft 1.21.11 (Fabric, Java 21): a card-based inventory plus a built-in icon Command Center with JSON-driven commands, async textures and GitHub Release auto-update.",
   "authors": [
     "ChaosSurvivalProject"
   ],
@@ -16,7 +16,8 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "com.chaossurvival.canvasmenu.CanvasMenu"
+      "com.chaossurvival.canvasmenu.CanvasMenu",
+      "com.canvasmenu.CommandCenter"
     ]
   },
   "depends": {
@@ -29,7 +30,12 @@
     "canvasmenu": {
       "updateOwner": "ChaosSurvivalProject",
       "updateRepo": "CanvasMenu",
-      "updateUrl": "https://api.github.com/repos/ChaosSurvivalProject/CanvasMenu/releases/latest"
+      "updateUrl": "https://api.github.com/repos/ChaosSurvivalProject/CanvasMenu/releases/latest",
+      "commandConfig": "assets/canvasmenu/commands.json",
+      "commandOverride": "config/canvasmenu-commands.json",
+      "textures": "assets/canvasmenu/textures/commands/",
+      "stagingDir": "mods/.canvasmenu-update/",
+      "lockFile": "mods/update.lock"
     }
   }
 }

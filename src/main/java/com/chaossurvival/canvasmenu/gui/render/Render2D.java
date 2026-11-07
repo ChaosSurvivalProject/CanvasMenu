@@ -334,7 +334,8 @@ public final class Render2D {
         if (text == null || text.isEmpty()) {
             return;
         }
-        g.drawString(font, text, x, y, color);
+        // 1.21.6+ drawString 改为 6 参（ARGB + shadow）；兼容层自动适配 6/5 参重载
+        GuiCompat.text(g, font, text, x, y, color);
     }
 
     // ------------------------------------------------------------------

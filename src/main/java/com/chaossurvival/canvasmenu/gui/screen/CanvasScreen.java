@@ -4,6 +4,7 @@ import com.chaossurvival.canvasmenu.anim.Animator;
 import com.chaossurvival.canvasmenu.anim.Tween;
 import com.chaossurvival.canvasmenu.anim.transitions.Transition;
 import com.chaossurvival.canvasmenu.gui.layout.Region;
+import com.chaossurvival.canvasmenu.gui.render.GuiCompat;
 import com.chaossurvival.canvasmenu.gui.render.Render2D;
 import com.chaossurvival.canvasmenu.gui.widget.AbstractWidget;
 import com.chaossurvival.canvasmenu.gui.widget.Widget;
@@ -85,18 +86,17 @@ public abstract class CanvasScreen extends Screen {
         float alpha = alpha();
         updateHover(mouseX, mouseY);
 
-        graphics.pose().pushPose();
         float scale = ENTER_SCALE_MIN + ENTER_SCALE_SPAN * enterTween.get();
-        graphics.pose().translate(width / 2.0f, height / 2.0f, 0.0f);
-        graphics.pose().scale(scale, scale, 1.0f);
-        graphics.pose().translate(-width / 2.0f, -height / 2.0f, 0.0f);
-
-        renderBackgroundLayer(graphics, mouseX, mouseY, delta, alpha);
-        renderContentLayer(graphics, mouseX, mouseY, delta, alpha);
-        renderInteractionLayer(graphics, mouseX, mouseY, delta, alpha);
-        renderEffectLayer(graphics, mouseX, mouseY, delta, alpha);
-
-        graphics.pose().popPose();
+        float centerX = width / 2.0f;
+        float centerY = height / 2.0f;
+        // 1.21.8+ 的 pose() 已从 PoseStack 换成 Matrix3x2fStack（方法名与参数个数全变）。
+        // 由兼容层在运行时探测可用变换栈，探测不到就退化为「只淡入淡出、不缩放」。
+        GuiCompat.withTransform(graphics, centerX, centerY, scale, () -> {
+            renderBackgroundLayer(graphics, mouseX, mouseY, delta, alpha);
+            renderContentLayer(graphics, mouseX, mouseY, delta, alpha);
+            renderInteractionLayer(graphics, mouseX, mouseY, delta, alpha);
+            renderEffectLayer(graphics, mouseX, mouseY, delta, alpha);
+        });
 
         if (closing && exitTween.isDone()) {
             finishClose();

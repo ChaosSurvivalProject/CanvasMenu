@@ -1,10 +1,12 @@
 {
   "canvasmenu.title": "画布菜单",
   "canvasmenu.key.settings": "打开画布菜单设置",
+  "canvasmenu.key.command_center": "打开指令中心",
   "canvasmenu.key.category": "画布菜单",
 
   "canvasmenu.screen.inventory": "背包",
   "canvasmenu.screen.settings": "画布菜单 · 设置",
+  "canvasmenu.screen.commands": "指令中心 · Command Center",
 
   "canvasmenu.settings.theme": "主题",
   "canvasmenu.settings.takeover_inventory": "接管背包 (E)",
@@ -37,5 +39,6 @@
   "canvasmenu.card.context.drop": "丢弃",
   "canvasmenu.card.context.details": "详情",
   "canvasmenu.card.search": "搜索物品…",
+  "canvasmenu.card.command_center": "指令中心",
   "canvasmenu.card.category.all": "全部"
 }

@@ -1,10 +1,12 @@
 {
   "canvasmenu.title": "Canvas Menu",
   "canvasmenu.key.settings": "Open Canvas Menu Settings",
+  "canvasmenu.key.command_center": "Open Command Center",
   "canvasmenu.key.category": "Canvas Menu",
 
   "canvasmenu.screen.inventory": "Inventory",
   "canvasmenu.screen.settings": "Canvas Menu · Settings",
+  "canvasmenu.screen.commands": "Command Center",
 
   "canvasmenu.settings.theme": "Theme",
   "canvasmenu.settings.takeover_inventory": "Take over Inventory (E)",
@@ -37,5 +39,6 @@
   "canvasmenu.card.context.drop": "Drop",
   "canvasmenu.card.context.details": "Details",
   "canvasmenu.card.search": "Search items…",
+  "canvasmenu.card.command_center": "Command Center",
   "canvasmenu.card.category.all": "All"
 }

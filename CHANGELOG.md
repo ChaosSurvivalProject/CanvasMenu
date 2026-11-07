@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), versioning follows [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] - 2026-11-07
+
+### Added — 内置贴图指令面板（Command Center）
+
+- New `com.canvasmenu.*` module: second client entrypoint `CommandCenter`, `F7` shortcut and an entry button in the canvas inventory.
+- `CommandPanelScreen`: full-screen canvas with a left category `CommandRail` (9 real categories + virtual "All"/"Favorites") and a right flowing `CommandGridLayout` with scroll + scissor clipping.
+- `CommandCardWidget`: nine-slice rounded panel, four-corner gradient, continuous hover lift (≤3px) + accent glow stroke, favourite badge; left click fills the chat bar **without auto-sending**, right click toggles favourites, Enter/Space for keyboard access.
+- `CommandTooltip` hover overlay showing the raw command and its description.
+- JSON-driven `CommandRegistry` reading `assets/canvasmenu/commands.json` (31 commands) with a player override at `config/canvasmenu-commands.json`; per-field fallbacks, duplicate-id guard, hot reload.
+- `Favorites` persisted to `config/canvasmenu-favorites.json`.
+- `ChatBridge` opens the vanilla `ChatScreen` with the command as initial text (reflection-based, clipboard fallback).
+- 41 real 64×64 RGBA PNG icons under `textures/commands/`, flat + micro-gradient + thin outline, grouped by category; `IconTextures` loads them via `ResourceManager` on virtual threads with a run-length paint path; `IconBlitter` falls back to a tinted badge + glyph when a texture is missing.
+- Three theme presets: `night_indigo` (暗夜靛蓝), `mist_gray` (雾灰极简), `neon_cyber` (霓虹赛博).
+- `AutoUpdater`: complete GitHub Release chain — startup check, SemVer compare, one-click download on virtual threads, SHA-256 verification, `mods/.canvasmenu-update/` staging, atomic `update.lock`, swap on exit, **never hot-swaps a running jar**. Failures degrade silently.
+- `GuiCompat`: reflection-based compatibility for 1.21.8+ `Matrix3x2fStack`, 6-arg ARGB `drawString` and `ResourceManager` lookups, with safe fallbacks.
+- `.github/workflows/build.yml` (real CI build) and `release.yml` (tag → jar + `.sha256` → GitHub Release).
+- Docs: `docs/TEXTURES.md`, rewritten README with build/release/usage instructions.
+
+### Changed
+
+- Upgraded `fabric-loom` 1.7.4 → **1.19.4** and Gradle 8.10.2 → **8.14** for Minecraft 1.21.11.
+- `CanvasScreen` pose transform now goes through `GuiCompat.withTransform` (no direct `PoseStack` calls).
+- Update chain consolidated into `com.canvasmenu.update.AutoUpdater`; the inventory entrypoint no longer performs its own startup check.
+- `fabric.mod.json`: two client entrypoints, version 0.2.0, extended `custom.canvasmenu` metadata.
+
 ## [0.1.0] - 2026-11-07
 
 ### Added

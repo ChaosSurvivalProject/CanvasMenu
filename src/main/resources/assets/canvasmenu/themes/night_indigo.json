@@ -1,0 +1,44 @@
+{
+  "name": "暗夜靛蓝",
+  "radius": [
+    6,
+    10,
+    16,
+    24
+  ],
+  "gap": [
+    8,
+    12,
+    16,
+    24
+  ],
+  "elevation": [
+    "#00000000",
+    "#22FFFFFF",
+    "#33FFFFFF",
+    "#44FFFFFF"
+  ],
+  "bg": {
+    "base": "#0B1020",
+    "panel": "#141B30",
+    "float": "#1C2540"
+  },
+  "text": {
+    "primary": "#E8ECF8",
+    "secondary": "#9AA6C4"
+  },
+  "accent": {
+    "main": "#7B8CFF",
+    "glow": "#AA7B8CFF"
+  },
+  "font": {
+    "display": "serif",
+    "body": "sans"
+  },
+  "motion": {
+    "fast": 150,
+    "normal": 240,
+    "slow": 320,
+    "curve": "cubic-bezier(0.22,1,0.36,1)"
+  }
+}

@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "note": "Player-editable command registry. Keep 'id' unique; 'icon' is relative to assets/canvasmenu/textures/commands/. Missing fields fall back to safe defaults.",
+  "categories": [
+    {
+      "id": "weather",
+      "name": "天气",
+      "glyph": "云",
+      "tint": "#4A90D9",
+      "icon": "categories/weather.png",
+      "virtual": false
+    },
+    {
+      "id": "time",
+      "name": "时间",
+      "glyph": "时",
+      "tint": "#E8A33D",
+      "icon": "categories/time.png",
+      "virtual": false
+    },
+    {
+      "id": "gamemode",
+      "name": "游戏模式",
+      "glyph": "模",
+      "tint": "#8B6FD6",
+      "icon": "categories/gamemode.png",
+      "virtual": false
+    },
+    {
+      "id": "teleport",
+      "name": "传送",
+      "glyph": "传",
+      "tint": "#35B8A6",
+      "icon": "categories/teleport.png",
+      "virtual": false
+    },
+    {
+      "id": "item",
+      "name": "物品",
+      "glyph": "物",
+      "tint": "#4FC3F7",
+      "icon": "categories/item.png",
+      "virtual": false
+    },
+    {
+      "id": "mob",
+      "name": "生物",
+      "glyph": "生",
+      "tint": "#7CB342",
+      "icon": "categories/mob.png",
+      "virtual": false
+    },
+    {
+      "id": "world",
+      "name": "世界",
+      "glyph": "世",
+      "tint": "#6D7B8D",
+      "icon": "categories/world.png",
+      "virtual": false
+    },
+    {
+      "id": "player",
+      "name": "玩家",
+      "glyph": "玩",
+      "tint": "#EF6C6C",
+      "icon": "categories/player.png",
+      "virtual": false
+    },
+    {
+      "id": "misc",
+      "name": "杂项",
+      "glyph": "杂",
+      "tint": "#B0B7C3",
+      "icon": "categories/misc.png",
+      "virtual": false
+    },
+    {
+      "id": "favorites",
+      "name": "收藏",
+      "glyph": "★",
+      "tint": "#F2C14E",
+      "icon": "categories/favorites.png",
+      "virtual": true
+    }
+  ],
+  "commands": [
+    {
+      "id": "weather_clear",
+      "category": "weather",
+      "icon": "weather/weather_sun.png",
+      "label": "晴天",
+      "description": "变成晴天",
+      "command": "/weather clear",
+      "keywords": [
+        "晴",
+        "太阳",
+        "sun",
+        "clear",
+        "天气"
+      ],
+      "tint": "#F2B33D",
+      "glyph": "晴"
+    },
+    {
+      "id": "weather_rain",
+      "category": "weather",
+      "icon": "weather/weather_rain.png",
+      "label": "雨天",
+      "description": "变成雨天",
+      "command": "/weather rain",
+      "keywords": [
+        "雨",
+        "rain",
+        "下雨",
+        "天气"
+      ],
+      "tint": "#4A90D9",
+      "glyph": "雨"
+    },
+    {
+      "id": "weather_thunder",
+      "category": "weather",
+      "icon": "weather/weather_thunder.png",
+      "label": "雷暴",
+      "description": "变成雷暴天",
+      "command": "/weather thunder",
+      "keywords": [
+        "雷",
+        "雷暴",
+        "thunder",
+        "storm",
+        "天气"
+      ],
+      "tint": "#6C7BD1",
+      "glyph": "雷"
+    },
+    {
+      "id": "time_day",
+      "category": "time",
+      "icon": "time/time_day.png",
+      "label": "白天",
+      "description": "设为白天",
+      "command": "/time set day",
+      "keywords": [
+        "白天",
+        "日出",
+        "day",
+        "sunrise",
+        "时间"
+      ],
+      "tint": "#E8A33D",
+      "glyph": "日"
+    },
+    {
+      "id": "time_sunset",
+      "category": "time",
+      "icon": "time/time_sunset.png",
+      "label": "黄昏",
+      "description": "设为黄昏",
+      "command": "/time set sunset",
+      "keywords": [
+        "黄昏",
+        "日落",
+        "sunset",
+        "时间"
+      ],
+      "tint": "#E07A4F",
+      "glyph": "昏"
+    },
+    {
+      "id": "time_night",
+      "category": "time",
+      "icon": "time/time_night.png",
+      "label": "夜晚",
+      "description": "设为夜晚",
+      "command": "/time set night",
+      "keywords": [
+        "夜晚",
+        "月亮",
+        "night",
+        "moon",
+        "时间"
+      ],
+      "tint": "#5C6BC0",
+      "glyph": "月"
+    },
+    {
+      "id": "time_midnight",
+      "category": "time",
+      "icon": "time/time_midnight.png",
+      "label": "午夜",
+      "description": "设为午夜",
+      "command": "/time set midnight",
+      "keywords": [
+        "午夜",
+        "深夜",
+        "midnight",
+        "时间"
+      ],
+      "tint": "#3F4A8C",
+      "glyph": "夜"
+    },
+    {
+      "id": "gamemode_survival",
+      "category": "gamemode",
+      "icon": "gamemode/gamemode_survival.png",
+      "label": "生存模式",
+      "description": "切换生存模式",
+      "command": "/gamemode survival",
+      "keywords": [
+        "生存",
+        "survival",
+        "模式",
+        "gamemode"
+      ],
+      "tint": "#E26D6D",
+      "glyph": "生"
+    },
+    {
+      "id": "gamemode_creative",
+      "category": "gamemode",
+      "icon": "gamemode/gamemode_creative.png",
+      "label": "创造模式",
+      "description": "切换创造模式",
+      "command": "/gamemode creative",
+      "keywords": [
+        "创造",
+        "creative",
+        "模式",
+        "gamemode"
+      ],
+      "tint": "#5FC7A8",
+      "glyph": "创"
+    },
+    {
+      "id": "gamemode_adventure",
+      "category": "gamemode",
+      "icon": "gamemode/gamemode_adventure.png",
+      "label": "冒险模式",
+      "description": "切换冒险模式",
+      "command": "/gamemode adventure",
+      "keywords": [
+        "冒险",
+        "adventure",
+        "模式",
+        "gamemode"
+      ],
+      "tint": "#C99A4B",
+      "glyph": "险"
+    },
+    {
+      "id": "gamemode_spectator",
+      "category": "gamemode",
+      "icon": "gamemode/gamemode_spectator.png",
+      "label": "旁观模式",
+      "description": "切换旁观模式",
+      "command": "/gamemode spectator",
+      "keywords": [
+        "旁观",
+        "spectator",
+        "模式",
+        "gamemode"
+      ],
+      "tint": "#8B6FD6",
+      "glyph": "观"
+    },
+    {
+      "id": "teleport_spawn",
+      "category": "teleport",
+      "icon": "teleport/teleport_spawn.png",
+      "label": "回到出生点",
+      "description": "传送到出生点",
+      "command": "/spawn",
+      "keywords": [
+        "出生点",
+        "重生",
+        "spawn",
+        "传送"
+      ],
+      "tint": "#35B8A6",
+      "glyph": "生"
+    },
+    {
+      "id": "teleport_sethome",
+      "category": "teleport",
+      "icon": "teleport/teleport_sethome.png",
+      "label": "设置家",
+      "description": "设置家的位置",
+      "command": "/sethome",
+      "keywords": [
+        "家",
+        "sethome",
+        "home",
+        "传送"
+      ],
+      "tint": "#3FAE8C",
+      "glyph": "家"
+    },
+    {
+      "id": "teleport_back",
+      "category": "teleport",
+      "icon": "teleport/teleport_back.png",
+      "label": "返回死亡点",
+      "description": "返回死亡点",
+      "command": "/back",
+      "keywords": [
+        "返回",
+        "死亡点",
+        "back",
+        "传送"
+      ],
+      "tint": "#2F9C9C",
+      "glyph": "返"
+    },
+    {
+      "id": "item_diamond",
+      "category": "item",
+      "icon": "item/item_diamond.png",
+      "label": "钻石 x64",
+      "description": "获得 64 个钻石",
+      "command": "/give @p diamond 64",
+      "keywords": [
+        "钻石",
+        "diamond",
+        "give",
+        "物品"
+      ],
+      "tint": "#4FC3F7",
+      "glyph": "钻"
+    },
+    {
+      "id": "item_iron_sword",
+      "category": "item",
+      "icon": "item/item_iron_sword.png",
+      "label": "铁剑",
+      "description": "获得一把铁剑",
+      "command": "/give @p iron_sword 1",
+      "keywords": [
+        "铁剑",
+        "sword",
+        "give",
+        "物品"
+      ],
+      "tint": "#B0BEC5",
+      "glyph": "剑"
+    },
+    {
+      "id": "item_golden_apple",
+      "category": "item",
+      "icon": "item/item_golden_apple.png",
+      "label": "金苹果 x16",
+      "description": "获得 16 个金苹果",
+      "command": "/give @p golden_apple 16",
+      "keywords": [
+        "金苹果",
+        "apple",
+        "give",
+        "物品"
+      ],
+      "tint": "#E8B84B",
+      "glyph": "果"
+    },
+    {
+      "id": "item_ender_pearl",
+      "category": "item",
+      "icon": "item/item_ender_pearl.png",
+      "label": "末影珍珠 x16",
+      "description": "获得 16 个末影珍珠",
+      "command": "/give @p ender_pearl 16",
+      "keywords": [
+        "末影珍珠",
+        "ender_pearl",
+        "give",
+        "物品"
+      ],
+      "tint": "#3E7E72",
+      "glyph": "珍"
+    },
+    {
+      "id": "mob_creeper",
+      "category": "mob",
+      "icon": "mob/mob_creeper.png",
+      "label": "召唤苦力怕",
+      "description": "召唤苦力怕",
+      "command": "/summon creeper",
+      "keywords": [
+        "苦力怕",
+        "creeper",
+        "summon",
+        "生物"
+      ],
+      "tint": "#7CB342",
+      "glyph": "怕"
+    },
+    {
+      "id": "mob_zombie",
+      "category": "mob",
+      "icon": "mob/mob_zombie.png",
+      "label": "召唤僵尸",
+      "description": "召唤僵尸",
+      "command": "/summon zombie",
+      "keywords": [
+        "僵尸",
+        "zombie",
+        "summon",
+        "生物"
+      ],
+      "tint": "#5E9E63",
+      "glyph": "僵"
+    },
+    {
+      "id": "mob_skeleton",
+      "category": "mob",
+      "icon": "mob/mob_skeleton.png",
+      "label": "召唤骷髅",
+      "description": "召唤骷髅",
+      "command": "/summon skeleton",
+      "keywords": [
+        "骷髅",
+        "skeleton",
+        "summon",
+        "生物"
+      ],
+      "tint": "#A8B3A0",
+      "glyph": "骷"
+    },
+    {
+      "id": "mob_ender_dragon",
+      "category": "mob",
+      "icon": "mob/mob_ender_dragon.png",
+      "label": "召唤末影龙",
+      "description": "召唤末影龙",
+      "command": "/summon ender_dragon",
+      "keywords": [
+        "末影龙",
+        "ender_dragon",
+        "龙",
+        "summon",
+        "生物"
+      ],
+      "tint": "#6A4FA3",
+      "glyph": "龙"
+    },
+    {
+      "id": "world_no_daylight_cycle",
+      "category": "world",
+      "icon": "world/world_no_daylight_cycle.png",
+      "label": "停止昼夜循环",
+      "description": "停止昼夜循环",
+      "command": "/gamerule doDaylightCycle false",
+      "keywords": [
+        "昼夜",
+        "循环",
+        "daylight",
+        "gamerule",
+        "世界"
+      ],
+      "tint": "#6D7B8D",
+      "glyph": "止"
+    },
+    {
+      "id": "world_keep_inventory",
+      "category": "world",
+      "icon": "world/world_keep_inventory.png",
+      "label": "死亡不掉落",
+      "description": "死亡不掉落物品",
+      "command": "/gamerule keepInventory true",
+      "keywords": [
+        "死亡不掉落",
+        "keepInventory",
+        "gamerule",
+        "世界"
+      ],
+      "tint": "#7E8CA0",
+      "glyph": "存"
+    },
+    {
+      "id": "world_peaceful",
+      "category": "world",
+      "icon": "world/world_peaceful.png",
+      "label": "和平难度",
+      "description": "切换和平难度",
+      "command": "/difficulty peaceful",
+      "keywords": [
+        "和平",
+        "peaceful",
+        "difficulty",
+        "世界"
+      ],
+      "tint": "#8FBF7F",
+      "glyph": "和"
+    },
+    {
+      "id": "player_regeneration",
+      "category": "player",
+      "icon": "player/player_regeneration.png",
+      "label": "生命恢复",
+      "description": "生命恢复 30 秒",
+      "command": "/effect give @p regeneration 30 2",
+      "keywords": [
+        "生命恢复",
+        "regeneration",
+        "effect",
+        "玩家"
+      ],
+      "tint": "#EF6C6C",
+      "glyph": "愈"
+    },
+    {
+      "id": "player_speed",
+      "category": "player",
+      "icon": "player/player_speed.png",
+      "label": "速度提升",
+      "description": "速度提升 60 秒",
+      "command": "/effect give @p speed 60 1",
+      "keywords": [
+        "速度",
+        "speed",
+        "effect",
+        "玩家"
+      ],
+      "tint": "#F2C14E",
+      "glyph": "速"
+    },
+    {
+      "id": "player_levitation",
+      "category": "player",
+      "icon": "player/player_levitation.png",
+      "label": "漂浮",
+      "description": "漂浮 10 秒",
+      "command": "/effect give @p levitation 10 1",
+      "keywords": [
+        "漂浮",
+        "levitation",
+        "effect",
+        "玩家"
+      ],
+      "tint": "#9B8BE0",
+      "glyph": "浮"
+    },
+    {
+      "id": "misc_locate_village",
+      "category": "misc",
+      "icon": "misc/misc_locate_village.png",
+      "label": "定位村庄",
+      "description": "定位村庄",
+      "command": "/locate structure village",
+      "keywords": [
+        "村庄",
+        "locate",
+        "village",
+        "定位",
+        "杂项"
+      ],
+      "tint": "#B0B7C3",
+      "glyph": "村"
+    },
+    {
+      "id": "misc_seed",
+      "category": "misc",
+      "icon": "misc/misc_seed.png",
+      "label": "查看种子",
+      "description": "查看世界种子",
+      "command": "/seed",
+      "keywords": [
+        "种子",
+        "seed",
+        "地图",
+        "杂项"
+      ],
+      "tint": "#9AA6B4",
+      "glyph": "种"
+    },
+    {
+      "id": "misc_say",
+      "category": "misc",
+      "icon": "misc/misc_say.png",
+      "label": "发送聊天",
+      "description": "发送一条聊天消息",
+      "command": "/say 你好，世界！",
+      "keywords": [
+        "聊天",
+        "say",
+        "消息",
+        "杂项"
+      ],
+      "tint": "#8FA0B4",
+      "glyph": "话"
+    }
+  ]
+}

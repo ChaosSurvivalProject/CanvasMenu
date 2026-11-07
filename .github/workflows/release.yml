@@ -1,0 +1,92 @@
+name: release
+
+# 推送 v* tag 时：真实构建 jar → 计算 SHA-256 → 创建 GitHub Release 并上传两个资产。
+# 也支持手动触发（workflow_dispatch），可指定 tag。
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, e.g. v0.2.0'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build jar and publish GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon --stacktrace
+
+      - name: Pick installable jar and write checksum
+        id: artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR=$(find build/libs -maxdepth 1 -name 'canvas-menu-*.jar' \
+                ! -name '*sources*' ! -name '*javadoc*' ! -name '*-dev*' \
+                -printf '%p\n' | sort | head -n 1)
+          if [[ -z "$JAR" ]]; then
+            echo "No installable jar found" >&2
+            ls -la build/libs/ >&2
+            exit 1
+          fi
+          sha256sum "$JAR" | awk '{print $1"  "FILENAME}' FILENAME="$(basename "$JAR")" > "$JAR.sha256"
+          echo "jar=$JAR" >> "$GITHUB_OUTPUT"
+          echo "sha=$JAR.sha256" >> "$GITHUB_OUTPUT"
+          echo "Selected: $JAR ($(du -h "$JAR" | cut -f1))"
+          cat "$JAR.sha256"
+
+      - name: Resolve release tag
+        id: tag
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [[ -z "$TAG" ]]; then TAG="${GITHUB_REF_NAME}"; fi
+          if [[ -z "$TAG" || "$TAG" == "main" ]]; then
+            echo "A v* tag or dispatch input is required" >&2
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          JAR: ${{ steps.artifacts.outputs.jar }}
+          SHA: ${{ steps.artifacts.outputs.sha }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" >/dev/null 2>&1 && \
+            gh release delete "$TAG" --yes --cleanup-tag || true
+          gh release create "$TAG" "$JAR" "$SHA" \
+            --title "Canvas Menu $TAG" \
+            --generate-notes \
+            --latest
+          echo "Published: $TAG"
+          gh release view "$TAG" --json tagName,assets --jq \
+            '.tagName, (.assets[].name)'
