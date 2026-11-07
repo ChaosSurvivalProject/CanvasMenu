@@ -1,0 +1,51 @@
+# ---- Gradle / build output ----
+.gradle/
+build/
+out/
+bin/
+*.class
+*.log
+*.tmp
+*.bak
+*.jar.bak
+
+# ---- IDE ----
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+~$*
+
+# ---- Secrets: NEVER commit credentials ----
+# Token 只从 -PgithubToken / GH_TOKEN 环境变量 / ~/.gradle/gradle.properties 读取
+.env
+.env.*
+*.env
+local.properties
+gradle.properties.local
+*.local.properties
+secrets/
+*.token
+*.key
+*.pem
+*.p12
+*.jks
+*.sha256
+!gradle/wrapper/gradle-wrapper.jar
+
+# ---- Runtime / dev ----
+run/
+mods/
+.canvasmenu-update/
+update.lock
+crash-reports/
+logs/
+
+# ---- Local tooling ----
+.github-push.json

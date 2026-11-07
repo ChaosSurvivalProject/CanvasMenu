@@ -1,0 +1,29 @@
+{
+  "name": "Neon Cyber",
+  "radius": [6, 10, 16, 24],
+  "gap": [8, 12, 16, 24],
+  "elevation": ["#00000000", "#22FFFFFF", "#33FFFFFF", "#44FFFFFF"],
+  "bg": {
+    "base": "#0E1116",
+    "panel": "#161B22",
+    "float": "#1C232D"
+  },
+  "text": {
+    "primary": "#E6EDF3",
+    "secondary": "#9BA7B4"
+  },
+  "accent": {
+    "main": "#4FD1C5",
+    "glow": "#4FD1C5AA"
+  },
+  "font": {
+    "display": "serif-ish",
+    "body": "mono-ish"
+  },
+  "motion": {
+    "fast": 150,
+    "normal": 240,
+    "slow": 320,
+    "curve": "cubic-bezier(0.22,1,0.36,1)"
+  }
+}

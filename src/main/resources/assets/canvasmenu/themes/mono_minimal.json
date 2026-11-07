@@ -1,0 +1,29 @@
+{
+  "name": "Mono Minimal",
+  "radius": [2, 4, 6, 10],
+  "gap": [12, 18, 28, 40],
+  "elevation": ["#00000000", "#12FFFFFF", "#1EFFFFFF", "#2AFFFFFF"],
+  "bg": {
+    "base": "#08090B",
+    "panel": "#101215",
+    "float": "#171A1E"
+  },
+  "text": {
+    "primary": "#F4F4F4",
+    "secondary": "#82868C"
+  },
+  "accent": {
+    "main": "#E8E8E8",
+    "glow": "#FFFFFF66"
+  },
+  "font": {
+    "display": "sans-ish",
+    "body": "mono-ish"
+  },
+  "motion": {
+    "fast": 150,
+    "normal": 240,
+    "slow": 320,
+    "curve": "cubic-bezier(0.22,1,0.36,1)"
+  }
+}

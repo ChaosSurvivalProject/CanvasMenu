@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "canvasmenu",
+  "version": "${version}",
+  "name": "Canvas Menu",
+  "description": "A canvas-style, card-based client UI for Minecraft. Curated items, breathing layouts, restrained motion.",
+  "authors": [
+    "ChaosSurvivalProject"
+  ],
+  "contact": {
+    "homepage": "https://github.com/ChaosSurvivalProject/CanvasMenu",
+    "issues": "https://github.com/ChaosSurvivalProject/CanvasMenu/issues",
+    "sources": "https://github.com/ChaosSurvivalProject/CanvasMenu"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.chaossurvival.canvasmenu.CanvasMenu"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16",
+    "minecraft": "~1.21.11",
+    "fabric-api": "*",
+    "java": ">=21"
+  },
+  "custom": {
+    "canvasmenu": {
+      "updateOwner": "ChaosSurvivalProject",
+      "updateRepo": "CanvasMenu",
+      "updateUrl": "https://api.github.com/repos/ChaosSurvivalProject/CanvasMenu/releases/latest"
+    }
+  }
+}

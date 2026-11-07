@@ -1,0 +1,29 @@
+{
+  "name": "Genshin Archive",
+  "radius": [4, 8, 14, 20],
+  "gap": [8, 14, 20, 28],
+  "elevation": ["#00000000", "#1ADBC8A0", "#2ADBC8A0", "#3ADBC8A0"],
+  "bg": {
+    "base": "#0C1220",
+    "panel": "#141C2E",
+    "float": "#1B2438"
+  },
+  "text": {
+    "primary": "#F2EAD8",
+    "secondary": "#A9B4C8"
+  },
+  "accent": {
+    "main": "#D3B87A",
+    "glow": "#D3B87A99"
+  },
+  "font": {
+    "display": "serif-ish",
+    "body": "mono-ish"
+  },
+  "motion": {
+    "fast": 150,
+    "normal": 240,
+    "slow": 320,
+    "curve": "cubic-bezier(0.22,1,0.36,1)"
+  }
+}

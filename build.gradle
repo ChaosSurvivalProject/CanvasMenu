@@ -1,0 +1,94 @@
+plugins {
+    id 'fabric-loom' version '1.7.4'
+    id 'java'
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.fabricmc.net/' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    // Gson 与 java.net.http.HttpClient 均由 Minecraft / JDK 提供，不引入 OkHttp / Jackson
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+/**
+ * 开发者本地一键发版：创建 GitHub Release（先草稿）并上传 jar + sha256，校验通过后发布。
+ *
+ * 令牌来源（优先级）：-PgithubToken=... > 环境变量 GH_TOKEN > ~/.gradle/gradle.properties
+ * 仓库里绝不保存令牌；build.gradle 内也没有任何默认令牌值。
+ */
+tasks.register('publishRelease', JavaExec) {
+    dependsOn tasks.named('build')
+    group = 'publishing'
+    description = 'Create a GitHub Release and upload the built jar (token from -PgithubToken or GH_TOKEN)'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.chaossurvival.canvasmenu.publish.ReleaseUploader'
+
+    doFirst {
+        def token = (project.findProperty('githubToken')
+                ?: System.getenv('GH_TOKEN')
+                ?: '').toString()
+        if (token.isBlank()) {
+            throw new GradleException(
+                    'Missing GitHub token. Pass -PgithubToken=... or set GH_TOKEN. ' +
+                    'Never store the token inside this repository.')
+        }
+        def owner = (project.findProperty('githubOwner') ?: 'ChaosSurvivalProject').toString()
+        def repo  = (project.findProperty('githubRepo')  ?: 'CanvasMenu').toString()
+        def tag   = "v${project.version}"
+        def notes = (project.findProperty('changelog') ?: "Release v${project.version}").toString()
+        def jar   = tasks.named('remapJar').get().archiveFile.get().asFile
+        if (!jar.isFile()) {
+            throw new GradleException("Built jar not found: ${jar}")
+        }
+        args owner, repo, token, tag, notes, jar.absolutePath
+    }
+}
+
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        // 如需发布到 Maven 仓库，在此配置；默认不启用
+    }
+}

@@ -1,0 +1,41 @@
+{
+  "canvasmenu.title": "画布菜单",
+  "canvasmenu.key.settings": "打开画布菜单设置",
+  "canvasmenu.key.category": "画布菜单",
+
+  "canvasmenu.screen.inventory": "背包",
+  "canvasmenu.screen.settings": "画布菜单 · 设置",
+
+  "canvasmenu.settings.theme": "主题",
+  "canvasmenu.settings.takeover_inventory": "接管背包 (E)",
+  "canvasmenu.settings.takeover_creative": "接管创造物品栏",
+  "canvasmenu.settings.check_startup": "启动时检查更新",
+  "canvasmenu.settings.ignore_prerelease": "忽略预发布版本",
+  "canvasmenu.settings.high_contrast": "高对比模式",
+  "canvasmenu.settings.reduce_motion": "减少动效",
+  "canvasmenu.settings.tooltip_ticks": "提示可读时长",
+  "canvasmenu.settings.verify_sha256": "校验 SHA-256",
+  "canvasmenu.settings.save": "保存",
+  "canvasmenu.settings.cancel": "取消",
+  "canvasmenu.settings.on": "开",
+  "canvasmenu.settings.off": "关",
+
+  "canvasmenu.update.title": "更新",
+  "canvasmenu.update.check": "检查更新",
+  "canvasmenu.update.checking": "正在检查更新…",
+  "canvasmenu.update.available": "发现新版本 %s",
+  "canvasmenu.update.up_to_date": "已是最新版本 v%s",
+  "canvasmenu.update.failed": "检查失败，可稍后重试",
+  "canvasmenu.update.changelog": "更新日志",
+  "canvasmenu.update.download": "下载并重启",
+  "canvasmenu.update.downloading": "下载中 %d%%",
+  "canvasmenu.update.scheduled": "更新已就绪，重启游戏后生效",
+  "canvasmenu.update.restart_hint": "请退出并重新启动 Minecraft 以完成更新",
+
+  "canvasmenu.card.empty": "空",
+  "canvasmenu.card.context.use": "使用",
+  "canvasmenu.card.context.drop": "丢弃",
+  "canvasmenu.card.context.details": "详情",
+  "canvasmenu.card.search": "搜索物品…",
+  "canvasmenu.card.category.all": "全部"
+}

@@ -1,0 +1,41 @@
+{
+  "canvasmenu.title": "Canvas Menu",
+  "canvasmenu.key.settings": "Open Canvas Menu Settings",
+  "canvasmenu.key.category": "Canvas Menu",
+
+  "canvasmenu.screen.inventory": "Inventory",
+  "canvasmenu.screen.settings": "Canvas Menu · Settings",
+
+  "canvasmenu.settings.theme": "Theme",
+  "canvasmenu.settings.takeover_inventory": "Take over Inventory (E)",
+  "canvasmenu.settings.takeover_creative": "Take over Creative Menu",
+  "canvasmenu.settings.check_startup": "Check updates on startup",
+  "canvasmenu.settings.ignore_prerelease": "Ignore pre-releases",
+  "canvasmenu.settings.high_contrast": "High contrast",
+  "canvasmenu.settings.reduce_motion": "Reduce motion",
+  "canvasmenu.settings.tooltip_ticks": "Tooltip duration",
+  "canvasmenu.settings.verify_sha256": "Verify SHA-256",
+  "canvasmenu.settings.save": "Save",
+  "canvasmenu.settings.cancel": "Cancel",
+  "canvasmenu.settings.on": "On",
+  "canvasmenu.settings.off": "Off",
+
+  "canvasmenu.update.title": "Updates",
+  "canvasmenu.update.check": "Check for updates",
+  "canvasmenu.update.checking": "Checking for updates…",
+  "canvasmenu.update.available": "New version %s available",
+  "canvasmenu.update.up_to_date": "Up to date (v%s)",
+  "canvasmenu.update.failed": "Check failed, please retry later",
+  "canvasmenu.update.changelog": "Changelog",
+  "canvasmenu.update.download": "Download & restart",
+  "canvasmenu.update.downloading": "Downloading %d%%",
+  "canvasmenu.update.scheduled": "Update ready, takes effect after restart",
+  "canvasmenu.update.restart_hint": "Quit and relaunch Minecraft to finish the update",
+
+  "canvasmenu.card.empty": "Empty",
+  "canvasmenu.card.context.use": "Use",
+  "canvasmenu.card.context.drop": "Drop",
+  "canvasmenu.card.context.details": "Details",
+  "canvasmenu.card.search": "Search items…",
+  "canvasmenu.card.category.all": "All"
+}
