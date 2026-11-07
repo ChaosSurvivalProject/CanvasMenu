@@ -59,11 +59,13 @@
 | 语言 | Java 21（record / 虚拟线程 / `java.net.http.HttpClient`） |
 | Minecraft | 1.21.11（Mojang 官方映射 `loom.officialMojangMappings()`） |
 | Loader | Fabric Loader 0.16.14，Fabric API `0.141.6+1.21.11` |
-| 构建 | Gradle 8.14 + **fabric-loom 1.19.4**，Java toolchain 21 |
+| 构建 | Gradle **9.5.0** + **fabric-loom 1.17.21**，Java toolchain 21 |
 | 运行侧 | `CLIENT` only（`fabric.mod.json` → `environment: "client"`） |
 | 依赖 | 仅 Fabric + MC 自带 Gson + JDK 内置 HttpClient；**无 OkHttp / Jackson / 重型 UI 库** |
 
-> 版本组合已对上游仓库核实：1.21.11 需要 Java 21 且带 `client_mappings`；`fabric-loom 1.19.4` 为当前稳定主线。
+> 版本组合已对上游仓库核实：1.21.11 需要 Java 21 且带 `client_mappings`；
+> `fabric-loom 1.17.21` 由 Gradle 9.5.0 构建、字节码目标 Java 21，是本组合中兼容 JDK 21 的最新稳定版
+> （1.18.x / 1.19.x 已改为 Java 25 字节码，无法在 JDK 21 上运行）。Gradle Wrapper 同步为 9.5.0。
 
 ---
 

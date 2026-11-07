@@ -23,7 +23,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), version
 
 ### Changed
 
-- Upgraded `fabric-loom` 1.7.4 → **1.19.4** and Gradle 8.10.2 → **8.14** for Minecraft 1.21.11.
+- Upgraded `fabric-loom` 1.7.4 → **1.17.21** and Gradle 8.10.2 → **9.5.0** for Minecraft 1.21.11 (1.18+/1.19+ loom are Java 25 bytecode and incompatible with JDK 21); foojay resolver → 1.0.0; Gradle Wrapper files synced to 9.5.0.
 - `CanvasScreen` pose transform now goes through `GuiCompat.withTransform` (no direct `PoseStack` calls).
 - Update chain consolidated into `com.canvasmenu.update.AutoUpdater`; the inventory entrypoint no longer performs its own startup check.
 - `fabric.mod.json`: two client entrypoints, version 0.2.0, extended `custom.canvasmenu` metadata.
