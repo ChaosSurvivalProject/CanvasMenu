@@ -12,6 +12,10 @@ import com.chaossurvival.canvasmenu.theme.Theme;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+// 1.21.9+ 起鼠标与键盘回调统一改为不可变事件对象（Mojang 官方映射名）
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -74,9 +78,10 @@ public abstract class CanvasScreen extends Screen {
         layout();
     }
 
+    /** 1.21.9+ 的 {@code resize} 不再接收 {@link Minecraft} 参数。 */
     @Override
-    public void resize(Minecraft client, int newWidth, int newHeight) {
-        super.resize(client, newWidth, newHeight);
+    public void resize(int newWidth, int newHeight) {
+        super.resize(newWidth, newHeight);
         regions = Region.standardLayout(width, height, theme);
         layout();
     }
@@ -198,11 +203,25 @@ public abstract class CanvasScreen extends Screen {
     }
 
     // ------------------------------------------------------------------
-    // 输入接管
+    // 输入接管（1.21.9+ 事件对象适配层）
     // ------------------------------------------------------------------
 
+    /**
+     * <p>Minecraft 1.21.9 起，Mojang 把鼠标 / 键盘回调从分散的基本类型参数
+     * 改成三个不可变 record：{@link MouseButtonEvent}、{@link KeyEvent}、
+     * {@link CharacterEvent}。这里统一解包成 {@link Widget} 接口使用的
+     * {@code (double, double, int)} 形式，使全部自绘组件与游戏版本解耦 ——
+     * 组件层一行都不用改。</p>
+     *
+     * <p>本画布不注册任何原版 {@code GuiEventListener}，所以原版
+     * {@code Screen} 的默认分发没有副作用；除键盘事件保留 super 调用
+     * （它负责 Esc / 焦点导航的收尾）外，鼠标事件直接返回 {@code false}。</p>
+     */
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
             if (widget.isVisible() && widget.contains(mouseX, mouseY)
@@ -211,29 +230,45 @@ public abstract class CanvasScreen extends Screen {
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return false;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        return onMouseReleased(event.x(), event.y(), event.button());
+    }
+
+    /**
+     * 鼠标释放钩子：子类可在此接管拖拽结束逻辑（例如画布背包的物品换位）。
+     * 覆写时请先调用 {@code super.onMouseReleased(...)} 让组件收到释放事件。
+     *
+     * @param mouseX 鼠标 x（GUI 坐标）
+     * @param mouseY 鼠标 y（GUI 坐标）
+     * @param button 按键编号
+     * @return 是否已被组件消费
+     */
+    protected boolean onMouseReleased(double mouseX, double mouseY, int button) {
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
             if (widget.isVisible() && widget.mouseReleased(mouseX, mouseY, button)) {
                 return true;
             }
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return false;
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         for (int i = widgets.size() - 1; i >= 0; i--) {
             Widget widget = widgets.get(i);
             if (widget.isVisible() && widget.mouseDragged(mouseX, mouseY, button, dragX, dragY)) {
                 return true;
             }
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return false;
     }
 
     @Override
@@ -249,7 +284,10 @@ public abstract class CanvasScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
+        int keyCode = event.key();
+        int scanCode = event.scancode();
+        int modifiers = event.modifiers();
         if (keyCode == GLFW.GLFW_KEY_TAB) {
             boolean backwards = (modifiers & GLFW.GLFW_MOD_SHIFT) != 0;
             cycleFocus(backwards ? -1 : 1);
@@ -263,16 +301,25 @@ public abstract class CanvasScreen extends Screen {
                 && widgets.get(focusIndex).keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean charTyped(char character, int modifiers) {
-        if (focusIndex >= 0 && focusIndex < widgets.size()
-                && widgets.get(focusIndex).charTyped(character, modifiers)) {
-            return true;
+    public boolean charTyped(CharacterEvent event) {
+        int codepoint = event.codepoint();
+        int modifiers = event.modifiers();
+        if (!Character.isValidCodePoint(codepoint)) {
+            return false;
         }
-        return super.charTyped(character, modifiers);
+        // CharacterEvent 携带 Unicode 码点，组件接口按 UTF-16 char 接收；
+        // 辅助平面字符拆成代理对逐字转发，避免中文输入 / 表情把字符截坏。
+        for (char character : Character.toChars(codepoint)) {
+            if (focusIndex >= 0 && focusIndex < widgets.size()
+                    && widgets.get(focusIndex).charTyped(character, modifiers)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

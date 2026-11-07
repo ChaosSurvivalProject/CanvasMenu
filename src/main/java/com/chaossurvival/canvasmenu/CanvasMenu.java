@@ -38,11 +38,13 @@ public final class CanvasMenu implements ClientModInitializer {
         ConfigManager.init();
         Animator.setReduceMotion(ConfigManager.get().reduceMotion());
 
+        // 1.21.9+ 的 KeyMapping 第四参不再是分类翻译键，而是 KeyMapping.Category 实例。
+        // 用原版内置的 MISC 分类，保证在所有版本与语言下都能登记成功。
         settingsKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "canvasmenu.key.settings",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_F6,
-                "canvasmenu.key.category"));
+                KeyMapping.Category.MISC));
 
         ClientTickEvents.END_CLIENT_TICK.register(CanvasMenu::onClientTick);
         Runtime.getRuntime().addShutdownHook(new Thread(Async::shutdown, "canvasmenu-async-shutdown"));

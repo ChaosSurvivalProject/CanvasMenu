@@ -19,13 +19,22 @@ import java.lang.reflect.Method;
  * <p>实现方式是打开原版 {@code ChatScreen} 并把指令作为初始文本传入：
  * 原版聊天输入框获得焦点、光标停在末尾，玩家按回车才真正发送。
  * 由于 1.21.x 中 {@code ChatScreen} 的构造与输入框字段名多次变动，
- * 这里用一次性反射探测：优先 {@code ChatScreen(String)}，其次无参构造 +
- * 反射写输入框，最后兜底把指令复制到系统剪贴板（界面会提示玩家手动粘贴）。
- * 编译期只依赖稳定的 {@link Screen} / {@link Minecraft}。</p>
+ * 这里用一次性反射探测，按版本优先级依次尝试：</p>
+ * <ol>
+ *   <li>{@code ChatScreen(String initial, boolean isDraft)} —— 1.21.9+ 真实签名，
+ *       {@code isDraft} 传 {@code false}：我们填入的是一条新指令，不是恢复草稿；</li>
+ *   <li>{@code ChatScreen(String initial)} —— 更早版本；</li>
+ *   <li>无参构造 + 反射写输入框；</li>
+ *   <li>全部不可用才兜底把指令复制到系统剪贴板。</li>
+ * </ol>
+ * <p>编译期只依赖稳定的 {@link Screen} / {@link Minecraft}，不引用
+ * 任何 1.21.x 版本中变动过的 {@code ChatScreen} 类型。</p>
  */
 public final class ChatBridge {
 
     private static final Class<?> CHAT_SCREEN;
+    /** 1.21.9+：ChatScreen(String initial, boolean isDraft)。 */
+    private static final Constructor<?> CTOR_WITH_TEXT_DRAFT;
     private static final Constructor<?> CTOR_WITH_TEXT;
     private static final Constructor<?> CTOR_EMPTY;
     private static final Method SET_CLIPBOARD;
@@ -40,9 +49,15 @@ public final class ChatBridge {
         }
         CHAT_SCREEN = clazz;
 
+        Constructor<?> withTextDraft = null;
         Constructor<?> withText = null;
         Constructor<?> empty = null;
         if (clazz != null) {
+            try {
+                withTextDraft = clazz.getConstructor(String.class, boolean.class);
+            } catch (Throwable ignored) {
+                // 不是 1.21.9+，继续探测旧签名
+            }
             try {
                 withText = clazz.getConstructor(String.class);
             } catch (Throwable ignored) {
@@ -51,9 +66,10 @@ public final class ChatBridge {
             try {
                 empty = clazz.getConstructor();
             } catch (Throwable ignored) {
-                // 两种构造都不可用
+                // 三种构造都不可用
             }
         }
+        CTOR_WITH_TEXT_DRAFT = withTextDraft;
         CTOR_WITH_TEXT = withText;
         CTOR_EMPTY = empty;
 
@@ -110,6 +126,11 @@ public final class ChatBridge {
             return null;
         }
         try {
+            // 1.21.9+ 首选：ChatScreen(String initial, boolean isDraft)
+            if (CTOR_WITH_TEXT_DRAFT != null) {
+                Object screen = CTOR_WITH_TEXT_DRAFT.newInstance(command, false);
+                return screen instanceof Screen cast ? cast : null;
+            }
             if (CTOR_WITH_TEXT != null) {
                 Object screen = CTOR_WITH_TEXT.newInstance(command);
                 return screen instanceof Screen cast ? cast : null;

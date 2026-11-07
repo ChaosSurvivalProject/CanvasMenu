@@ -61,11 +61,12 @@ public final class CommandCenter implements ClientModInitializer {
         IconTextures.preload(collectIconPaths());
 
         // 快捷键：F7 打开指令中心
+        // 1.21.9+ 的 KeyMapping 第四参为 KeyMapping.Category，不再是分类翻译键
         commandKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
                 "canvasmenu.key.command_center",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_F7,
-                "canvasmenu.key.category"));
+                KeyMapping.Category.MISC));
 
         ClientTickEvents.END_CLIENT_TICK.register(CommandCenter::onClientTick);
         ClientLifecycleEvents.CLIENT_STOPPING.register(

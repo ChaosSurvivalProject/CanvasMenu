@@ -110,8 +110,9 @@ public final class CanvasInventoryScreen extends CanvasScreen {
         super.renderContentLayer(graphics, mouseX, mouseY, delta, alpha);
     }
 
+    /** 覆写画布基类的释放钩子：在组件收到释放事件后处理物品拖放换位。 */
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    protected boolean onMouseReleased(double mouseX, double mouseY, int button) {
         ItemCard source = null;
         for (ItemCard card : visibleCards) {
             if (card.isDragging()) {
@@ -119,7 +120,7 @@ public final class CanvasInventoryScreen extends CanvasScreen {
                 break;
             }
         }
-        boolean consumed = super.mouseReleased(mouseX, mouseY, button);
+        boolean consumed = super.onMouseReleased(mouseX, mouseY, button);
         if (source != null) {
             for (ItemCard target : visibleCards) {
                 if (target != source && target.contains(mouseX, mouseY)) {

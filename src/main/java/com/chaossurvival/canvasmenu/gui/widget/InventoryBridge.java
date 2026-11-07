@@ -82,7 +82,8 @@ public final class InventoryBridge {
      */
     public static boolean isShiftDown() {
         try {
-            long window = Minecraft.getInstance().getWindow().getWindow();
+            // 1.21.9+ 的 Window 把 GLFW 窗口句柄暴露为 handle()，旧的 getWindow() 已移除
+            long window = Minecraft.getInstance().getWindow().handle();
             return GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS
                     || GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS;
         } catch (Throwable t) {
