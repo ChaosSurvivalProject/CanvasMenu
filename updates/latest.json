@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-20T00:00:00Z",
+  "channels": [
+    {
+      "id": "stable",
+      "target": {
+        "version": "0.2.0",
+        "versionCode": 200,
+        "minecraft": "1.21.11"
+      },
+      "minSupported": {
+        "version": "0.1.0",
+        "minecraft": "1.21.11"
+      },
+      "minClientVersion": "0.2.0",
+      "mode": "OPTIONAL",
+      "rolloutPercent": 100,
+      "assets": [
+        {
+          "platform": "fabric-mod",
+          "minecraft": "1.21.11",
+          "fileName": "canvas-menu-0.2.0.jar",
+          "size": 262316,
+          "sha256": "55d47c41c9c460d1a89a1246534a275f73db409cd9b0ad27c00690960416597a",
+          "downloadUrl": "https://github.com/ChaosSurvivalProject/CanvasMenu/releases/download/v0.2.0/canvas-menu-0.2.0.jar"
+        }
+      ]
+    }
+  ]
+}
