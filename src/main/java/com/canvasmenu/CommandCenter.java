@@ -9,10 +9,9 @@ import com.canvasmenu.command.CommandRegistry;
 import com.canvasmenu.command.Favorites;
 import com.canvasmenu.render.IconTextures;
 import com.canvasmenu.screen.CommandPanelScreen;
-import com.canvasmenu.update.AutoUpdater;
+import com.chaossurvival.canvasmenu.autoupdate.ClientUpdateChecker;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
@@ -69,14 +68,17 @@ public final class CommandCenter implements ClientModInitializer {
                 KeyMapping.Category.MISC));
 
         ClientTickEvents.END_CLIENT_TICK.register(CommandCenter::onClientTick);
-        ClientLifecycleEvents.CLIENT_STOPPING.register(
-                client -> AutoUpdater.onClientStopping());
-
-        // 启动时检查更新（配置可关闭）；失败静默降级
-        if (ConfigManager.get().checkUpdatesOnStartup()) {
-            AutoUpdater.checkOnStartup();
+        // 内置更新（mc-autoupdate）：启动自检 + 每周四 12:00 定时检查。
+        // 覆盖原 AutoUpdater：下载到 mods/.update/ 并提示重启生效，不静默替换运行中的 jar。
+        try {
+            if (ConfigManager.get().checkUpdatesOnStartup()) {
+                ClientUpdateChecker.fromMods(
+                        "https://raw.githubusercontent.com/ChaosSurvivalProject/CanvasMenu/main/updates/latest.json",
+                        com.chaossurvival.canvasmenu.CanvasMenu.localVersionString()).start();
+            }
+        } catch (Throwable t) {
+            Log.info("Update module init failed (non-fatal): {}", t.getMessage());
         }
-        AutoUpdater.pendingMessage().ifPresent(text -> Log.info("{}", text));
 
         Log.info("Command Center ready: {} commands, {} categories",
                 count, CommandRegistry.categories().size());
